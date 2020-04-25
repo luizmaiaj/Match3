@@ -24,6 +24,7 @@ Timer = require 'lib/knife.timer'
 --
 -- our own code
 --
+require "src/Particles"
 
 -- utility
 require 'src/StateMachine'
@@ -52,7 +53,8 @@ gSounds = {
 
 gTextures = {
     ['main'] = love.graphics.newImage('graphics/match3.png'),
-    ['background'] = love.graphics.newImage('graphics/background.png')
+    ['background'] = love.graphics.newImage('graphics/background.png'),
+    ['particle'] = love.graphics.newImage('graphics/particle.png')
 }
 
 gFrames = {

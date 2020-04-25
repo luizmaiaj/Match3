@@ -17,7 +17,8 @@ function Board:init(x, y, level)
     self.x = x
     self.y = y
     self.matches = {}
-    self.maxTier = level <= 6 and level or 6 -- for each level add a new kind of block
+    self.level = level
+    self.maxTier = self.level <= 6 and self.level or 6 -- for each level add a new kind of block
 
     self:initializeTiles()
 end
@@ -34,7 +35,9 @@ function Board:initializeTiles()
             
             -- create a new tile at X,Y with a random color and variety
             -- if maxTier is one ensure that random will not generate a float number
-            table.insert(self.tiles[tileY], Tile(tileX, tileY, math.random(18), maxTier == 1 and 1 or math.random(self.maxTier)))
+            local colour = math.random(18)
+            local tier = maxTier == 1 and 1 or math.random(self.maxTier)
+            table.insert(self.tiles[tileY], Tile(tileX, tileY, colour, tier, self.level))
         end
     end
 
@@ -80,9 +83,13 @@ function Board:calculateMatches()
 
                     -- go backwards from here by matchNum
                     for x2 = x - 1, x - matchNum, -1 do
-                        
-                        -- add each tile to the match that's in that match
-                        table.insert(match, self.tiles[y][x2])
+                        if self.tiles[y][x2].shiny then
+                            for shinyX = 1, 8 do
+                                table.insert(match, self.tiles[y][shinyX])
+                            end
+                        else
+                            table.insert(match, self.tiles[y][x2])
+                        end
                     end
 
                     -- add this match to our total matches table
@@ -104,7 +111,13 @@ function Board:calculateMatches()
             
             -- go backwards from end of last row by matchNum
             for x = 8, 8 - matchNum + 1, -1 do
-                table.insert(match, self.tiles[y][x])
+                if self.tiles[y][x].shiny then
+                    for shinyX = 1, 8 do
+                        table.insert(match, self.tiles[y][shinyX])
+                    end
+                else
+                    table.insert(match, self.tiles[y][x])
+                end
             end
 
             table.insert(matches, match)
@@ -128,7 +141,13 @@ function Board:calculateMatches()
                     local match = {}
 
                     for y2 = y - 1, y - matchNum, -1 do
-                        table.insert(match, self.tiles[y2][x])
+                        if self.tiles[y2][x].shiny then
+                            for shinyX = 1, 8 do
+                                table.insert(match, self.tiles[y2][shinyX])
+                            end
+                        else
+                            table.insert(match, self.tiles[y2][x])
+                        end
                     end
 
                     table.insert(matches, match)
@@ -149,7 +168,14 @@ function Board:calculateMatches()
             
             -- go backwards from end of last row by matchNum
             for y = 8, 8 - matchNum + 1, -1 do
-                table.insert(match, self.tiles[y][x])
+                -- check if it's a shiny tile and set the whole row as a match
+                if self.tiles[y][x].shiny then
+                    for shinyX = 1, 8 do
+                        table.insert(match, self.tiles[y][shinyX])
+                    end
+                else
+                    table.insert(match, self.tiles[y][x])
+                end
             end
 
             table.insert(matches, match)
@@ -242,7 +268,7 @@ function Board:getFallingTiles()
             if not tile then
 
                 -- new tile with random color and variety
-                local tile = Tile(x, y, math.random(18), maxTier == 1 and 1 or math.random(self.maxTier))
+                local tile = Tile(x, y, math.random(18), maxTier == 1 and 1 or math.random(self.maxTier), self.level)
                 tile.y = -32
                 self.tiles[y][x] = tile
 
@@ -261,6 +287,22 @@ function Board:render()
     for y = 1, #self.tiles do
         for x = 1, #self.tiles[1] do
             self.tiles[y][x]:render(self.x, self.y)
+        end
+    end
+end
+
+function Board:updateTiles(dt)
+    for k, tileY in pairs(self.tiles) do
+        for k, tileX in pairs(tileY) do
+            tileX:update(dt)
+        end
+    end
+end
+
+function Board:drawShinyTiles()
+    for k, tileY in pairs(self.tiles) do
+        for k, tileX in pairs(tileY) do
+            tileX:drawTile(self.x, self.y)
         end
     end
 end

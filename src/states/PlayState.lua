@@ -173,6 +173,8 @@ function PlayState:update(dt)
         end
     end
 
+    self.board:updateTiles(dt)
+
     Timer.update(dt)
 end
 
@@ -249,6 +251,8 @@ function PlayState:render()
     else
         love.graphics.setColor(172/255, 50/255, 50/255, 1)
     end
+
+    self.board:drawShinyTiles()
 
     -- draw actual cursor rect
     love.graphics.setLineWidth(4)
