@@ -21,7 +21,7 @@ PlayState = Class{__includes = BaseState}
 function PlayState:init()
     
     -- start our transition alpha at full, so we fade in
-    self.transitionAlpha = 255
+    self.transitionAlpha = 1
 
     -- position in the grid which we're highlighting
     self.boardHighlightX = 0
