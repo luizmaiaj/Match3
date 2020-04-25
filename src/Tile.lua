@@ -26,7 +26,6 @@ function Tile:init(x, y, color, variety, level)
     self.color = color
     self.variety = variety
     local max = 64 / level >= 10 and 64 / level or 10 -- maximum one every 10 tiles to become shiny
-    print(max)
     self.shiny = math.random(0, max) == 0 and true or false -- one in 32 chance of being a shiny block
 
     if self.shiny then

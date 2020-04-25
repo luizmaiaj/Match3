@@ -142,33 +142,38 @@ function PlayState:update(dt)
                 gSounds['error']:play()
                 self.highlightedTile = nil
             else
-                
-                -- swap grid positions of tiles
-                local tempX = self.highlightedTile.gridX
-                local tempY = self.highlightedTile.gridY
+                -- test if it's a match before swaping
+                if self:testMatch(self.highlightedTile, x, y) or self:testMatch(self.board.tiles[y][x], self.highlightedTile.gridX, self.highlightedTile.gridY) then
+                    -- swap grid positions of tiles
+                    local tempX = self.highlightedTile.gridX
+                    local tempY = self.highlightedTile.gridY
 
-                local newTile = self.board.tiles[y][x]
+                    local newTile = self.board.tiles[y][x]
 
-                self.highlightedTile.gridX = newTile.gridX
-                self.highlightedTile.gridY = newTile.gridY
-                newTile.gridX = tempX
-                newTile.gridY = tempY
+                    self.highlightedTile.gridX = newTile.gridX
+                    self.highlightedTile.gridY = newTile.gridY
+                    newTile.gridX = tempX
+                    newTile.gridY = tempY
 
-                -- swap tiles in the tiles table
-                self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] = self.highlightedTile
+                    -- swap tiles in the tiles table
+                    self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] = self.highlightedTile
 
-                self.board.tiles[newTile.gridY][newTile.gridX] = newTile
+                    self.board.tiles[newTile.gridY][newTile.gridX] = newTile
 
-                -- tween coordinates between the two so they swap
-                Timer.tween(0.1, {
-                    [self.highlightedTile] = {x = newTile.x, y = newTile.y},
-                    [newTile] = {x = self.highlightedTile.x, y = self.highlightedTile.y}
-                })
-                
-                -- once the swap is finished, we can tween falling blocks as needed
-                :finish(function()
-                    self:calculateMatches()
-                end)
+                    -- tween coordinates between the two so they swap
+                    Timer.tween(0.1, {
+                        [self.highlightedTile] = {x = newTile.x, y = newTile.y},
+                        [newTile] = {x = self.highlightedTile.x, y = self.highlightedTile.y}
+                    })
+                    
+                    -- once the swap is finished, we can tween falling blocks as needed
+                    :finish(function()
+                        self:calculateMatches()
+                    end)
+                else
+                    gSounds['error']:play()
+                    self.highlightedTile = nil
+                end
             end
         end
     end
@@ -176,6 +181,55 @@ function PlayState:update(dt)
     self.board:updateTiles(dt)
 
     Timer.update(dt)
+end
+
+function PlayState:testMatch(tile, x, y)
+    local dx = x - tile.gridX
+    local dy = y - tile.gridY
+
+    if y-1 >= 1 and y+1 <= 8 and dy == 0 then --one match above and one below
+        if tile.color == self.board.tiles[y-1][x].color and tile.color == self.board.tiles[y+1][x].color then
+            print('one above and one below')
+            return true
+        end
+    end
+
+    if x-1 >= 1 and x+1 <= 8  and dx == 0 then --one match left and one right
+        if tile.color == self.board.tiles[y][x-1].color and tile.color == self.board.tiles[y][x+1].color then
+            print('one left and one right')
+            return true
+        end
+    end
+
+    if y-2 >= 1 then -- two above
+        if tile.color == self.board.tiles[y-1][x].color and tile.color == self.board.tiles[y-2][x].color then
+            print('two above')
+            return true
+        end
+    end
+
+    if y+2 <= 8 then -- two below
+        if tile.color == self.board.tiles[y+1][x].color and tile.color == self.board.tiles[y+2][x].color then
+            print('two below')
+            return true
+        end
+    end
+
+    if x-2 >= 1 then -- two left
+        if tile.color == self.board.tiles[y][x-1].color and tile.color == self.board.tiles[y][x-2].color then
+            print('two left')
+            return true
+        end
+    end
+
+    if x+2 <= 8 then -- two right
+        if tile.color == self.board.tiles[y][x+1].color and tile.color == self.board.tiles[y][x+2].color then
+            print('two right')
+            return true
+        end
+    end
+
+    return false
 end
 
 --[[

@@ -35,7 +35,7 @@ function Board:initializeTiles()
             
             -- create a new tile at X,Y with a random color and variety
             -- if maxTier is one ensure that random will not generate a float number
-            local colour = math.random(18)
+            local colour = math.random(8) -- reduce from 18 to 8 because only matches will be allowed to move tile
             local tier = maxTier == 1 and 1 or math.random(self.maxTier)
             table.insert(self.tiles[tileY], Tile(tileX, tileY, colour, tier, self.level))
         end
