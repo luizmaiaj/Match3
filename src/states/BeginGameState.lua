@@ -19,9 +19,6 @@ function BeginGameState:init()
     -- start our transition alpha at full, so we fade in
     self.transitionAlpha = 1
 
-    -- spawn a board and place it toward the right
-    self.board = Board(VIRTUAL_WIDTH - 272, 16)
-
     -- start our level # label off-screen
     self.levelLabelY = -64
 end
@@ -30,6 +27,9 @@ function BeginGameState:enter(def)
     
     -- grab level # from the def we're passed
     self.level = def.level
+
+    -- spawn a board and place it toward the right, send level as parameter to increase complexity
+    self.board = Board(VIRTUAL_WIDTH - 272, 16, self.level)
 
     --
     -- animate our white screen fade-in, then animate a drop-down with
@@ -83,8 +83,7 @@ function BeginGameState:render()
     love.graphics.rectangle('fill', 0, self.levelLabelY - 8, VIRTUAL_WIDTH, 48)
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.setFont(gFonts['large'])
-    love.graphics.printf('Level ' .. tostring(self.level),
-        0, self.levelLabelY, VIRTUAL_WIDTH, 'center')
+    love.graphics.printf('Level ' .. tostring(self.level), 0, self.levelLabelY, VIRTUAL_WIDTH, 'center')
 
     -- our transition foreground rectangle
     love.graphics.setColor(1, 1, 1, self.transitionAlpha)
