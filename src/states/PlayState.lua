@@ -155,8 +155,7 @@ function PlayState:update(dt)
                 newTile.gridY = tempY
 
                 -- swap tiles in the tiles table
-                self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
-                    self.highlightedTile
+                self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] = self.highlightedTile
 
                 self.board.tiles[newTile.gridY][newTile.gridX] = newTile
 
@@ -197,6 +196,9 @@ function PlayState:calculateMatches()
         for k, match in pairs(matches) do
             self.score = self.score + #match * 50
         end
+
+        -- add time when a match happens
+        self.timer = self.timer + 1
 
         -- remove any tiles that matched from the board, making empty spaces
         self.board:removeMatches()
