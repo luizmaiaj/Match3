@@ -42,7 +42,7 @@ VIRTUAL_WIDTH = 512
 VIRTUAL_HEIGHT = 288
 
 -- speed at which our background texture will scroll
-BACKGROUND_SCROLL_SPEED = 80
+BACKGROUND_SCROLL_SPEED = 20
 
 function love.load()
     
@@ -78,6 +78,10 @@ function love.load()
 
     -- initialize input table
     love.keyboard.keysPressed = {}
+
+    -- initialize mouse input table
+    love.mouse.buttonX = {}
+    love.mouse.buttonY = {}
 end
 
 function love.resize(w, h)
@@ -98,6 +102,17 @@ function love.keyboard.wasPressed(key)
     end
 end
 
+function love.mousepressed(x, y, button)
+    local tx, ty = push:toGame(x, y)
+
+    love.mouse.buttonX[button] = tx
+    love.mouse.buttonY[button] = ty
+end
+
+function love.mouse.wasPressed(button)
+    return love.mouse.buttonX[button], love.mouse.buttonY[button]
+end
+
 function love.update(dt)
     
     -- scroll background, used across all states
@@ -111,6 +126,9 @@ function love.update(dt)
     gStateMachine:update(dt)
 
     love.keyboard.keysPressed = {}
+
+    love.mouse.buttonX = {}
+    love.mouse.buttonY = {}
 end
 
 function love.draw()

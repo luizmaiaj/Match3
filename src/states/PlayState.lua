@@ -121,13 +121,34 @@ function PlayState:update(dt)
             gSounds['select']:play()
         end
 
-        -- if we've pressed enter, to select or deselect a tile...
-        if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
-            
-            -- if same tile as currently highlighted, deselect
-            local x = self.boardHighlightX + 1
-            local y = self.boardHighlightY + 1
-            
+        -- manage mouse clicks
+        local mouseX, mouseY = love.mouse.wasPressed(1)
+        local x = 0
+        local y = 0
+    
+        if mouseX ~= nil and mouseY ~= nil then
+            if mouseX > self.board.x and mouseX <= (self.board.x + 256) then
+                x = math.floor((mouseX - self.board.x) / 32) + 1
+                self.boardHighlightX = x - 1
+            else
+                mouseX = nil
+            end
+
+            if mouseY > self.board.y and mouseY <= (self.board.y + 256) then
+                y = math.floor((mouseY - self.board.y) / 32) + 1
+                self.boardHighlightY = y - 1
+            else
+                mouseY = nil
+            end
+        end
+
+        if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') or (mouseX ~= nil and mouseY ~= nil) then
+
+            if mouseX == nil or mouseY == nil then
+                x = self.boardHighlightX + 1
+                y = self.boardHighlightY + 1
+            end
+
             -- if nothing is highlighted, highlight current tile
             if not self.highlightedTile then
                 self.highlightedTile = self.board.tiles[y][x]
@@ -254,11 +275,9 @@ function PlayState:calculateMatches()
             -- consider the tile variety to increase pontuation
             for j, tile in pairs(match) do
                 self.score = self.score + tile.variety * 50
+                self.timer = self.timer + tile.variety -- add time when a match happens
             end
         end
-
-        -- add time when a match happens
-        self.timer = self.timer + 1
 
         -- remove any tiles that matched from the board, making empty spaces
         self.board:removeMatches()

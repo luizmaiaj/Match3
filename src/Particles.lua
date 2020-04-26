@@ -6,6 +6,16 @@
 
 Particles = Class{}
 
+paletteColors = {
+    [1] = { ['r'] = 217/255, ['g'] = 160/255, ['b'] = 102/255 },
+    [2] = { ['r'] = 138/255, ['g'] = 111/255, ['b'] = 48/255 },
+    [3] = { ['r'] = 82/255, ['g'] = 75/255, ['b'] = 36/255 },
+    [4] = { ['r'] = 75/255, ['g'] = 105/255, ['b'] = 47/255 },
+    [5] = { ['r'] = 55/255, ['g'] = 148/255, ['b'] = 110/255 },
+    [6] = { ['r'] = 91/255, ['g'] = 110/255, ['b'] = 225/255 },
+    [7] = { ['r'] = 48/255, ['g'] = 96/255, ['b'] = 130/255 },
+    [8] = { ['r'] = 63/255, ['g'] = 63/255, ['b'] = 116/255 }}
+
 function Particles:initParticles()
     -- particle system belonging to the brick, emitted on hit
     self.psystem = love.graphics.newParticleSystem(gTextures['particle'], 10)
@@ -36,7 +46,16 @@ function Particles:hitParticles(tier, color)
     -- set the particle system to interpolate between two colors; in this case, we give
     -- it our self.color but with varying alpha; brighter for higher tiers, fading to 0
     -- over the particle's lifetime (the second color)
-    self.psystem:setColors(1, 1, 1, 1, 1, 1, 1, 0)
+    self.psystem:setColors(
+        paletteColors[color].r,
+        paletteColors[color].g,
+        paletteColors[color].b,
+        1,
+        paletteColors[color].r,
+        paletteColors[color].g,
+        paletteColors[color].b,
+        0)
+        
     self.psystem:emit(5)
 end
 
